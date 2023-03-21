@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+"-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+"http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+	<definition name="baselayout"
+		template="/WEB-INF/views/common/layout.jsp">
+		<put-attribute name="title" value=""></put-attribute>
+		<put-attribute name="header"
+			value="/WEB-INF/views/common/header.jsp"></put-attribute>
+		<put-attribute name="side"
+			value="/WEB-INF/views/common/side.jsp"></put-attribute>
+		<put-attribute name="body" value=""></put-attribute>
+		<put-attribute name="footer"
+			value="/WEB-INF/views/common/footer.jsp"></put-attribute>
+	</definition>
+
+	<definition name="main" extends="baselayout">
+		<put-attribute name="title" value="메인 페이지"></put-attribute>
+		<put-attribute name="body"
+			value="/WEB-INF/views/main.jsp"></put-attribute>
+	</definition>
+
+	<definition name="/member/listMembers" extends="baselayout">
+		<put-attribute name="title" value="회원목록창"></put-attribute>
+		<put-attribute name="body"
+			value="/WEB-INF/views/member/listMembers.jsp"></put-attribute>
+	</definition>
+
+	<definition name="/member/loginForm" extends="baselayout">
+		<put-attribute name="title" value="로그인창"></put-attribute>
+		<put-attribute name="body"
+			value="/WEB-INF/views/member/loginForm.jsp"></put-attribute>
+	</definition>
+
+</tiles-definitions>
