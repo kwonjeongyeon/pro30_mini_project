@@ -1,6 +1,7 @@
 package com.myspring.pro30.board.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,11 @@ public class BoardServiceImpl implements BoardService {
 		List<ArticleVO> articlesList = boardDAO.selectAllArticlesList();
 		return articlesList;
 
+	}
+
+	@Override
+	public int addNewArticle(Map articleMap) throws Exception {
+		return boardDAO.insertNewArticle(articleMap);
 	}
 
 }
