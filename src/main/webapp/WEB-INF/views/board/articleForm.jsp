@@ -3,7 +3,9 @@
 
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<% request.setCharacterEncoding("utf-8"); %>
+<%
+	request.setCharacterEncoding("utf-8");
+%>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
@@ -16,29 +18,28 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script type="text/javascript">
-						function readURL(input) {
-							if (input.files && input.files[0]) {
-								var reader = new FileReader();
-								reader.onload = function (e) { //event
-									$('#preview').attr('src', e.target.result);
-								}
-								reader.readAsDataURL(input.files[0]);
-							}
-						}
+	function readURL(input) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function(e) { //event
+				$('#preview').attr('src', e.target.result);
+			}
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
 
-						function backToList(obj) {
-							obj.action = "${contextPath}/board/listArticles.do";
-							obj.submit();
-						}
-
-					</script>
+	function backToList(obj) {
+		obj.action = "${contextPath}/board/listArticles.do";
+		obj.submit();
+	}
+</script>
 </head>
 
 <body>
 	<h1 style="text-align: center;">글 쓰기</h1>
 	<form name="articleForm" method="post"
 		action="${contextPath}/board/addNewArticle.do"
-		enctype="multipart/form-data">
+		enctype="multipart/form-data" accept-charset="utf-8">
 		<table border="0" align="center">
 			<tr>
 				<td align="right">작성자</td>

@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <%
-request.setCharacterEncoding("utf-8");
+	request.setCharacterEncoding("utf-8");
 %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}" />
@@ -15,6 +15,10 @@ request.setCharacterEncoding("utf-8");
 <meta charset="UTF-8">
 <title>글 보기</title>
 <style>
+#tr_file_upload {
+	display: none;
+}
+
 #tr_btn_modify {
 	display: none;
 }
@@ -34,6 +38,7 @@ function fn_enable(obj){
 	document.getElementById("i_content").disabled = false;
 	document.getElementById("i_imageFileName").disabled = false;
 	document.getElementById("tr_btn_modify").style.display = "block";
+	document.getElementById("tr_file_upload").style.display = "block";
 	document.getElementById("tr_btn").style.display = "none";
 }
 
@@ -42,17 +47,17 @@ function fn_modify_article(obj){
 	obj.submit();
 }
 
-function fn_remove_article(url,articleNo){
+function fn_remove_article(url,articleNO){
 	var form = document.createElement("form");
 	form.setAttribute("method", "post");
 	form.setAttribute("action", url);
 	
-	var articleNoInput = document.createElement("input");
-	articleNoInput.setAttribute("type","hidden");
-	articleNoInput.setAttribute("name","articleNo");
-	articleNoInput.setAttribute("value", articleNo);
+	var articleNOInput = document.createElement("input");
+	articleNOInput.setAttribute("type","hidden");
+	articleNOInput.setAttribute("name","articleNO");
+	articleNOInput.setAttribute("value", articleNO);
 	
-	form.appendChild(articleNoInput);
+	form.appendChild(articleNOInput);
 	document.body.appendChild(form);
 	form.submit();
 	
@@ -73,16 +78,17 @@ function readURL(input){
 </head>
 <body>
 	<form name="frmArticle" method="post" action="${contextPath}"
-		enctype="multipart/form-data">
+		enctype="multipart/form-data" accept-charset="utf-8">
 		<table border="0" align="center">
 			<tr>
 				<td width="150" align="center" bgcolor="#FF9933">글번호</td>
-				<td><input type="text" value="${article.articleNo}" disabled />
-					<input type="hidden" name="articleNo" value="${article.articleNo}" /></td>
+				<td><input type="text" value="${article.articleNO}" disabled />
+					<input type="hidden" name="articleNO" value="${article.articleNO}" /></td>
 			</tr>
 			<tr>
 				<td width="150" align="center" bgcolor="#FF9933">작성자 아이디</td>
-				<td><input type="text" value="${article.id}" name="id" disabled /></td>
+				<td><input type="text" value="${article.id}" name="writer"
+					disabled /></td>
 			</tr>
 			<tr>
 				<td width="150" align="center" bgcolor="#FF9933">글제목</td>
@@ -95,7 +101,7 @@ function readURL(input){
 						disabled>${article.content}</textarea></td>
 			</tr>
 
-			<c:if
+			<%-- 			<c:if
 				test="${not empty article.imageFileName && article.imageFileName!='null'}">
 				<tr>
 					<td width="150" align="center" bgcolor="#FF9933" rowspan="2">이미지</td>
@@ -108,7 +114,36 @@ function readURL(input){
 					<td><input type="file" name="imageFileName"
 						id="i_imageFileName" disabled onchange="readURL(this);" /></td>
 				</tr>
-			</c:if>
+			</c:if> --%>
+
+			<c:choose>
+				<c:when
+					test="${not empty article.imageFileName && article.imageFileName !='null' }">
+					<tr>
+						<td width="150" align="center" bgcolor="#FF9933" rowspan="2">
+							이미지</td>
+						<td><input type="hidden" name="originalFileName"
+							value="${article.imageFileName }" /> <img
+							src="${contextPath}/download.do?articleNO=${article.articleNO}&imageFileName=${article.imageFileName}"
+							id="preview" /><br></td>
+					</tr>
+				</c:when>
+
+				<c:otherwise>
+					<tr id="tr_file_upload">
+						<td width="150" align="center" bgcolor="#FF9933" rowspan="2">
+							이미지</td>
+						<td><input type="hidden" name="originalFileName"
+							value="${article.imageFileName }" /></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><img id="preview" /><br> <input type="file"
+							name="imageFileName" id="i_imageFileName" disabled
+							onchange="readURL(this);" /></td>
+					</tr>
+				</c:otherwise>
+			</c:choose>
 
 			<tr>
 				<td width="150" align="center" bgcolor="#FF9933">등록일자</td>
@@ -122,15 +157,15 @@ function readURL(input){
 					type="button" value="취소" onclick="backToList(frmArticle)">
 				</td>
 			<tr id="tr_btn">
-				<td colspan=2 align="center"><input type="button" value="수정하기"
-					onclick="fn_enable(this.form)"> <input type="button"
-					value="삭제하기"
-					onclick="fn_remove_article('${contextPath}/board/removeArticle.do', ${article.articleNo})">
-
-					<input type="button" value="리스트로 돌아가기"
+				<td colspan=2 align="center"><c:if
+						test="${member.id == article.id}">
+						<input type="button" value="수정하기" onclick="fn_enable(this.form)">
+						<input type="button" value="삭제하기"
+							onclick="fn_remove_article('${contextPath}/board/removeArticle.do', ${article.articleNO})">
+					</c:if> <input type="button" value="리스트로 돌아가기"
 					onclick="backToList(this.form)"> <input type="button"
 					value="답글쓰기"
-					onclick="fn_reply_form('${contextPath}/board/replyForm.do', ${article.articleNo})">
+					onclick="fn_reply_form('${contextPath}/board/replyForm.do', ${article.articleNO})">
 				</td>
 			</tr>
 		</table>

@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-	pageEncoding="EUC-KR"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -21,15 +21,15 @@
 	font-size: 30px;
 }
 </style>
-<meta charset="EUC-KR">
-<title>�� ���â</title>
+<meta charset="UTF-8">
+<title>글 목록창</title>
 </head>
 <script>
 	function fn_articleForm(isLogOn, articleForm, loginForm) {
 		if (isLogOn != '' && isLogOn != 'false') {
 			location.href = articleForm;
 		} else {
-			alert("�α��� �� �۾��Ⱑ �����մϴ�.");
+			alert("로그인 후 글쓰기가 가능합니다.");
 			location.href = loginForm + '?action=/board/articleForm.do';
 		}
 	}
@@ -37,10 +37,10 @@
 <body>
 	<table align="center" border="1" width="80%">
 		<tr height="10" align="center" bgcolor="lightgreen">
-			<td>�۹�ȣ</td>
-			<td>�ۼ���</td>
-			<td>����</td>
-			<td>�ۼ���</td>
+			<td>글번호</td>
+			<td>작성자</td>
+			<td>제목</td>
+			<td>작성일</td>
 		</tr>
 
 		<c:choose>
@@ -48,7 +48,7 @@
 				<tr height="10">
 					<td colspan="4">
 						<p align="center">
-							<b><span style="font-size: 9pt;">��ϵ� ���� �����ϴ�.</span></b>
+							<b><span style="font-size: 9pt;">등록된 글이 없습니다.</span></b>
 						</p>
 					</td>
 				</tr>
@@ -67,7 +67,7 @@
 										<span style="padding-left: 20px;"></span>
 									</c:forEach>
 
-									<span style="font-size: 12px;">[�亯]</span>
+									<span style="font-size: 12px;">[답변]</span>
 									<a class='cls1'
 										href="${contextPath}/board/viewArticle.do?articleNO=${article.articleNO}">${article.title}</a>
 								</c:when>
@@ -84,6 +84,6 @@
 	</table>
 	<a class='cls1'
 		href="javascript:fn_articleForm('${isLogOn}','${contextPath}/board/articleForm.do','${contextPath}/member/loginForm.do')"><p
-			class='cls2'>�۾���</p></a>
+			class='cls2'>글쓰기</p></a>
 </body>
 </html>

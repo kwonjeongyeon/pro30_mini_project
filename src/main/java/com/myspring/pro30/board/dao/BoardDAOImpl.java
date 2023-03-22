@@ -20,7 +20,7 @@ public class BoardDAOImpl implements BoardDAO {
 	@Override
 	public List selectAllArticlesList() throws DataAccessException {
 
-		// id가 selectAllAriclesList인 SQL문을 요청
+		// id가 selectAllArticlesList인 SQL문을 요청
 		List<ArticleVO> articlesList = sqlSession.selectList("mapper.board.selectAllArticlesList");
 		return articlesList;
 	}
@@ -36,6 +36,21 @@ public class BoardDAOImpl implements BoardDAO {
 
 	private int selectNewArticleNO() throws DataAccessException {
 		return sqlSession.selectOne("mapper.board.selectNewArticleNO");
+	}
+
+	@Override
+	public ArticleVO selectArticle(int articleNO) throws DataAccessException {
+		return sqlSession.selectOne("mapper.board.selectArticle", articleNO);
+	}
+
+	@Override
+	public void updateArticle(Map articleMap) throws DataAccessException {
+		sqlSession.selectOne("mapper.board.updateArticle", articleMap);
+	}
+	
+	@Override
+	public void deleteArticle(int articleNO) throws DataAccessException {
+		sqlSession.selectOne("mapper.board.deleteArticle", articleNO);
 	}
 
 }

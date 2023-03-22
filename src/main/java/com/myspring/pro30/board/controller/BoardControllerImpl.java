@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -55,11 +56,12 @@ public class BoardControllerImpl implements BoardController {
 	public ResponseEntity addNewArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)
 			throws Exception { // 업로드된 파일에 액세스할 수 있도록 서블릿 요청 내에서 멀티파트 콘텐츠를 처리하는 추가 방법을 제공
 		multipartRequest.setCharacterEncoding("utf-8");
+		// 한 개의 새로운 글 추가
 		Map<String, Object> articleMap = new HashMap<String, Object>();
 		// 글 정보를 저장하기 위한 articleMap 생성
 		Enumeration enu = multipartRequest.getParameterNames();
 
-		// 글쓰기창에서 전송된 글 정보를 Map에 key/value로 저장
+		// 글쓰기 창에서 전송된 글 정보를 Map에 key/value로 저장
 		while (enu.hasMoreElements()) {
 			String name = (String) enu.nextElement();
 			String value = multipartRequest.getParameter(name);
@@ -71,7 +73,7 @@ public class BoardControllerImpl implements BoardController {
 		HttpSession session = multipartRequest.getSession();
 		MemberVO memberVO = (MemberVO) session.getAttribute("member");
 
-		// 세션에 저장된 회우너 정보로부터 회원 ID 가져옴
+		// 세션에 저장된 회원 정보로부터 회원 ID 가져옴
 		String id = memberVO.getId();
 
 //회원 id, 이미지 파일 이름, 부모 글 번호를 articleMap에 저장
@@ -82,10 +84,10 @@ public class BoardControllerImpl implements BoardController {
 		String message;
 		ResponseEntity resEnt = null;
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
+		responseHeaders.add("content-Type", "text/html; charset=UTF-8");
 
 		try {
-			// 글정보가 저장된 articleMap을 Service 클래스의 addArticle()메서드로 전달
+			// 글 정보가 저장된 articleMap을 Service 클래스의 addArticle() 메서드로 전달
 			int articleNO = boardService.addNewArticle(articleMap);
 
 			// 글 정보를 추가한 후 업로드한 이미지 파일을 글 번호로 명명한 폴더로 이동
@@ -106,7 +108,7 @@ public class BoardControllerImpl implements BoardController {
 			File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + imageFileName);
 			srcFile.delete();
 
-			// 오류 발생시 오류 메시지 전달
+			// 오류 발생 시 오류 메세지 전달
 			message = "<script>";
 			message += " alert('오류가 발생했습니다. 다시 시도해 주세요.');";
 			message += " location.href='" + multipartRequest.getContextPath() + "/board/articleForm.do'; ";
@@ -120,7 +122,7 @@ public class BoardControllerImpl implements BoardController {
 
 	@RequestMapping(value = "/board/*Form.do", method = RequestMethod.GET)
 	private ModelAndView form(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// 글쓰기창을 나타냄
+		// 글쓰기 창을 나타냄
 		String viewName = (String) request.getAttribute("viewName");
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName(viewName);
@@ -145,6 +147,120 @@ public class BoardControllerImpl implements BoardController {
 
 		}
 		return imageFileName;
+	}
+
+	@RequestMapping(value = "/board/viewArticle.do", method = RequestMethod.GET)
+	public ModelAndView viewArticle(@RequestParam("articleNO") int articleNO, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		// 메서드 매개 변수가 웹 요청 매개 변수에 바인딩되어야 함을 나타내는 주석
+		String viewName = (String) request.getAttribute("viewName");
+		articleVO = boardService.viewArticle(articleNO);
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName(viewName);
+		mav.addObject("article", articleVO);
+		return mav;
+	}
+
+	@RequestMapping(value = "/board/modArticle.do", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity modArticle(MultipartHttpServletRequest multipartRequest, HttpServletResponse response)
+			throws Exception {
+		multipartRequest.setCharacterEncoding("utf-8");
+		Map<String, Object> articleMap = new HashMap<String, Object>();
+		Enumeration enu = multipartRequest.getParameterNames();
+		// 순환 인터페이스, 스레드에 안전한 구조로 사용, HashTable과 Vector에서 사용 가능
+		while (enu.hasMoreElements()) {
+			String name = (String) enu.nextElement();
+			String value = multipartRequest.getParameter(name);
+			articleMap.put(name, value);
+		}
+
+		String iamgeFileName = upload(multipartRequest);
+		HttpSession session = multipartRequest.getSession();
+//		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+//		String id = memberVO.getId();
+//		articleMap.put("id", id);
+		articleMap.put("iamgeFileName", iamgeFileName);
+
+		String articleNO = (String) articleMap.get("articleNO");
+		String message;
+		ResponseEntity resEnt = null;
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Content-Type", "text/html; charset=utf-8");
+
+		try {
+			boardService.modArticle(articleMap);
+			if (iamgeFileName != null && iamgeFileName.length() != 0) {
+				File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + iamgeFileName);
+				File destDir = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO);
+				FileUtils.moveFileToDirectory(srcFile, destDir, true);
+
+				String originalFileName = (String) articleMap.get("originalFileName");
+				File oldFile = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO + "\\" + originalFileName);
+				oldFile.delete();
+			}
+
+			message = "<script>";
+			message += " alert('글을 수정했습니다.');";
+			message += " location.href='" + multipartRequest.getContextPath() + "/board/viewArticle.do?articleNO="
+					+ articleNO + "';";
+			message += " </script>";
+
+			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
+
+		} catch (Exception e) {
+			File srcFile = new File(ARTICLE_IMAGE_REPO + "\\" + "temp" + "\\" + iamgeFileName);
+			srcFile.delete();
+
+			message = "<script>";
+			message += " alert('오류가 발생했습니다. 다시 시도해 주세요.');";
+			message += " location.href='" + multipartRequest.getContextPath() + "/board/viewArticle.do?articleNO="
+					+ articleNO + "';";
+			message += " </script>";
+
+			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
+			e.printStackTrace();
+		}
+
+		return resEnt;
+	}
+
+	@Override
+	@RequestMapping(value = "/board/removeArticle.do", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity removeArticle(@RequestParam("articleNO") int articleNO, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		response.setContentType("text/html; charset=UTF-8");
+		String message;
+		ResponseEntity resEnt = null;
+		// HTTP 상태코드를 전송하고 싶은 데이터와 함께 전송할 수 있어 세밀한 제어가 필요한 경우 사용
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.add("Content-Type", "text/html; charset=UTF-8");
+
+		try {
+			boardService.removeArticle(articleNO);
+			File destDir = new File(ARTICLE_IMAGE_REPO + "\\" + articleNO);
+			FileUtils.deleteDirectory(destDir);
+
+			message = "<script>";
+			message += " alert('글을 삭제했습니다.');";
+			message += " location.href='" + request.getContextPath() + "/board/listArticles.do';";
+			message += " </script>";
+
+			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
+
+		} catch (Exception e) {
+
+			message = "<script>";
+			message += " alert('오류가 발생했습니다. 다시 시도해 주세요.');";
+			message += " location.href='" + request.getContextPath() + "/board/listArticles.do';";
+			message += " </script>";
+
+			resEnt = new ResponseEntity(message, responseHeaders, HttpStatus.CREATED);
+			e.printStackTrace();
+
+		}
+		return resEnt;
 	}
 
 }
