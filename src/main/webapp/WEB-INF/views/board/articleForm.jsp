@@ -32,6 +32,8 @@
 		obj.action = "${contextPath}/board/listArticles.do";
 		obj.submit();
 	}
+	
+
 </script>
 </head>
 
@@ -61,6 +63,7 @@
 				<td><input type="file" name="imageFileName"
 					onchange="readURL(this);" /></td>
 				<td><img id="preview" src="#" width="200" height="200" /></td>
+
 			</tr>
 			<tr>
 				<td align="right"></td>

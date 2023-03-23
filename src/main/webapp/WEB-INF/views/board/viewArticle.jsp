@@ -127,6 +127,11 @@ function readURL(input){
 							src="${contextPath}/download.do?articleNO=${article.articleNO}&imageFileName=${article.imageFileName}"
 							id="preview" /><br></td>
 					</tr>
+					<tr>
+						<td></td>
+						<td><input type="file" name="imageFileName"
+							id="i_imageFileName" disabled onchange="readURL(this);" /></td>
+					</tr>
 				</c:when>
 
 				<c:otherwise>

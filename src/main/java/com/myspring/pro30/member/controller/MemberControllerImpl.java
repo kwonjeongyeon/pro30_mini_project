@@ -139,6 +139,7 @@ public class MemberControllerImpl implements MemberController {
 			session.setAttribute("member", memberVO);
 			session.setAttribute("isLogOn", true);
 			String action = (String) session.getAttribute("action");
+			System.out.println("로그인 성공시 액션값 : "+action);
 			// 로그인 성공시 세션에 저장된 action값을 가져옴
 			session.removeAttribute("action");
 			if (action != null) { // action값이 null이 아니면 action값을 뷰이름으로 지정해 글쓰기창으로 이동
