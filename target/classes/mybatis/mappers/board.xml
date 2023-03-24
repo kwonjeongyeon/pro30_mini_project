@@ -26,12 +26,12 @@
  	]]>
 	</select>
 
-	<insert id="insertNewArticle" parameterType="java.util.Map">
+	<!-- <insert id="insertNewArticle" parameterType="java.util.Map">
 	<![CDATA[
 		INSERT into t_board(articleNO, title, content, imageFileName, id)
 		VALUES(#{articleNO}, #{title}, #{content}, #{imageFileName}, #{id})
 	]]>
-	</insert>
+	</insert> -->
 
 	<select id="selectNewArticleNO" resultType="int">
 	<![CDATA[
@@ -66,6 +66,27 @@
 	]]>
 	</delete>
 
+	<insert id="insertNewArticle" parameterType="java.util.Map"> <!-- imageFileName 칼럼은 더이상 사용하지 않으므로 null 입력 -->
+	<![CDATA[
+		insert into t_board(articleNO, id, title, content, imageFileName)
+		values(#{articleNO}, #{id}, #{title}, #{content}, null)
+	]]>
+	</insert>
+	
+	<!-- 다중 이미지 추가 SQL문 -->
 
+	<insert id="insertNewImage" parameterType="java.util.Map"> <!-- 한번에 여러개의 레코드 추가, dummy , 반복문으로 SQL돌림 -->
+		<foreach collection="list" item="item" open="INSERT ALL"
+			separator=" " close="SELECT * FROM DUAL">
+			INTO t_imageFile(imageFileNO, imageFileName, regDate, articleNO)
+			VALUES (#{item.imageFileNO}, #{item.imageFileName}, sysdate, #{item.articleNO})
+		</foreach>
+	</insert>
+
+	<select id="selectNewImageFileNO" resultType="int"> <!-- 새로 추가할 이미지 정보의 이미지 번호 가져옴 -->
+	<![CDATA[
+	SELECT nvl(max(imageFileNO),0) from t_imageFile
+	]]>
+	</select>
 
 </mapper>

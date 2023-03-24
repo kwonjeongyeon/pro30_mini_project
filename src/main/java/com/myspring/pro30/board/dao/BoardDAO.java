@@ -11,7 +11,9 @@ public interface BoardDAO {
 	public List selectAllArticlesList() throws DataAccessException;
 
 	public int insertNewArticle(Map articleMap) throws DataAccessException;
-	//public void insertNewImage(Map articleMap) throws DataAccessException;
+	
+	//다중 파일 업로드
+	public void insertNewImage(Map articleMap) throws DataAccessException;
 	
 	public ArticleVO selectArticle(int articleNO) throws DataAccessException;
 

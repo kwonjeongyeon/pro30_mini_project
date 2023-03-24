@@ -37,8 +37,8 @@ public class BoardDAOImpl implements BoardDAO {
 		return articleNO;
 	} // 새 글에 대한 글 번호를 조회한 후 전달된 articleMap에 글 번호 설정
 
-	/* @Override
-	public void insertNewImage(Map articleMap) throws DataAccessException {
+	@Override
+	public void insertNewImage(Map articleMap) throws DataAccessException { //다중파일 업로드
 		List<ImageVO> imageFileList = (ArrayList) articleMap.get("imageFileList");
 		// articleMap이 글번호 가져옴
 		int articleNO = (Integer) articleMap.get("articleNO");
@@ -55,10 +55,10 @@ public class BoardDAOImpl implements BoardDAO {
 
 	private int selectNewImageFileNO() throws DataAccessException {
 		return sqlSession.selectOne("mapper.board.selectNewImageFileNO");
-	} */
+	} 
 
 	private int selectNewArticleNO() throws DataAccessException {
-		return sqlSession.selectOne("mapper.board.selectNewArticleNO");
+		return sqlSession.selectOne("mapper.board.selectNewArticle");
 	}
 
 	@Override

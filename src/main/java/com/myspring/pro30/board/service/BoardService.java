@@ -17,5 +17,6 @@ public interface BoardService {
 
 	public void removeArticle(int articleNO) throws Exception;
 	
+	public int addReply(Map articleMap) throws Exception;
 
 }
